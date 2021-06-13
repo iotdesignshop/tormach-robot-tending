@@ -7,6 +7,10 @@ class TendingManager:
     """TendingManager is the core object you instantiate to manage the tending processes in the system"""
     def __init__(self):
         self.loadingArray = LoadingArray.LoadingArray()
+        self.workflowSteps = []
+        self.preWorkflowSteps = []
+        self.postWorkflowSteps = []
+        self.current_item = None
 
     def add_item(self, name, pickcoord, placecoord=None):
         """
@@ -81,3 +85,74 @@ class TendingManager:
         :return: None
         """
         self.loadingArray = LoadingArray.LoadingArray()
+
+    def add_pre_workflow_step(self,workflow_step):
+        """
+        Adds a workflow step to be executed prior to the main item loop
+        :param workflow_step: Step to be added
+        :return: None
+        """
+        self.preWorkflowSteps.append(workflow_step)
+
+    def add_post_workflow_step(self,workflow_step):
+        """
+        Adds a workflow step to be executed on each item
+        :param workflow_step: Step to be added
+        :return: None
+        """
+        self.postWorkflowSteps.append(workflow_step);
+
+    def add_workflow_step(self,workflow_step):
+        """
+        Adds a workflow step to be executed on each item
+        :param workflow_step: Step to be added
+        :return: None
+        """
+        self.workflowSteps.append(workflow_step)
+
+    def clear_workflow_steps(self):
+        """Clears the list of workflow steps to prepare for a new sequence of operations"""
+        self.workflowSteps = []
+        self.preWorkflowSteps = []
+        self.postWorkflowSteps = []
+
+    def execute_workflow(self):
+        """Commence processing all registered workflow steps and items"""
+
+        # First step - run through pre-workflow
+        logging.info("Workflow: Executing Pre-Workflow Steps")
+        for step in self.preWorkflowSteps:
+            if not step.execute_step():
+                # Hit an error or a stop - bail out
+                logging.error("Execution failed in Pre-Workflow Step #"+str(self.preWorkflowSteps.index(step)))
+                return False
+
+        # Then, run through all items
+        logging.info("Workflow: Executing Per-Item Steps")
+        for item in self.loadingArray.items:
+            self.current_item = item
+            for step in self.workflowSteps:
+                if not step.execute_step():
+                    # Hit an error or a stop - bail out
+                    logging.error("Execution failed in workflow Step #{0} ({2}) on Item #{1} ({3})"
+                                  .format(str(self.workflowSteps.index(step)),
+                                          str(self.loadingArray.items.index(item)),
+                                          step.__class__.__name__,
+                                          item.itemID))
+                    item.mark_error("Execution failed in workflow Step#{0} ({1})",
+                                    str(self.workflowSteps.index(step)),
+                                    step.__class__.__name__)
+                    return False
+                else:
+                    item.mark_processed()
+
+            logging.info(self.loadingArray.get_stats())
+
+
+        # Final step - run through post-workflow
+        logging.info("Workflow: Executing Post-Workflow Steps")
+        for step in self.postWorkflowSteps:
+            if not step.execute_step():
+                # Hit an error or a stop - bail out
+                logging.error("Execution failed in Post-Workflow Step #"+str(self.postWorkflowSteps.index(step)))
+                return False

@@ -1,6 +1,12 @@
 import TendingManager
 import LoadingArray.LoadingArray as LoadingArray
 import LoadingArray.LoadingArrayItem as LoadingArrayItem
+import WorkflowSteps.JawPickStep as JawPickStep
+import WorkflowSteps.JawPlaceStep as JawPlaceStep
+import WorkflowSteps.PickNextRawPart as PickNextRawPart
+import WorkflowSteps.PlaceFinishedPart as PlaceFinishedPart
+import WorkflowSteps.MillMDIOperation as MillMDIOperation
+
 
 manager = TendingManager.TendingManager()
 
@@ -53,6 +59,20 @@ for item in loading.items:
     else:
         print("Position error")
         raise Exception("Position error on item "+str(idx))
+
+# Test a Basic Workflow
+manager.add_pre_workflow_step(JawPickStep.JawPickStep("vise_1_origin"))
+
+manager.add_workflow_step(PickNextRawPart.PickNextRawPart(manager))
+manager.add_workflow_step(JawPlaceStep.JawPlaceStep("vise_1_origin"))
+manager.add_workflow_step(MillMDIOperation.MillMDIOperation("cut_my_part.nc"))
+manager.add_workflow_step(JawPickStep.JawPickStep("vise_1_origin"))
+manager.add_workflow_step(PlaceFinishedPart.PlaceFinishedPart(manager))
+manager.add_workflow_step(MillMDIOperation.MillMDIOperation("washdown.nc"))
+
+manager.add_post_workflow_step(JawPlaceStep.JawPlaceStep("vise_1_origin"))
+
+manager.execute_workflow()
 
 # Success
 print("+++++++++++++++++++++++++++")
