@@ -10,6 +10,7 @@ import WorkflowSteps.MillMDIOperation as MillMDIOperation
 
 manager = TendingManager.TendingManager()
 
+# Just some rough test data here as a baseline
 origin = [100, 200, 9]
 xoff = 87
 yoff = 123
@@ -61,6 +62,8 @@ for item in loading.items:
         raise Exception("Position error on item "+str(idx))
 
 # Test a Basic Workflow
+print("====== Testing Workflow Sequence ====== ")
+
 manager.add_pre_workflow_step(JawPickStep.JawPickStep("vise_1_origin"))
 
 manager.add_workflow_step(PickNextRawPart.PickNextRawPart(manager))
