@@ -18,6 +18,7 @@ numcol = 4
 numrow = 3
 count = 10
 
+
 # Test Expected Case - Construct a valid 2D grid
 print("====== Testing 2D Grid ====== ")
 loading = manager.create_2d_array(origin, xoff, yoff, numcol, numrow, count)
