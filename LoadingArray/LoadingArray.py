@@ -1,5 +1,6 @@
-import LoadingArrayItem
+from LoadingArray import LoadingArrayItem
 import TendingExceptions
+
 
 class LoadingArray:
     """
@@ -7,6 +8,7 @@ class LoadingArray:
     be operated on in sequential order. In addition to a container for those items,
     it provides basic status and management operations.
     """
+
     def __init__(self):
         self.items = []
 
@@ -24,10 +26,9 @@ class LoadingArray:
                 raise TendingExceptions.ItemException("Duplicate item name provided for item - they must be unique")
 
         # Add the item
-        item = LoadingArrayItem.LoadingArrayItem(itemname, pickcoord, placecoord);
+        item = LoadingArrayItem.LoadingArrayItem(itemname, pickcoord, placecoord)
         self.items.append(item)
         return item
-
 
     def get_stats(self):
         """
@@ -40,14 +41,9 @@ class LoadingArray:
         for item in self.items:
             response["total"] = response["total"] + 1
             if item.state == 'raw':
-                response["raw"]  = response["raw"] + 1
+                response["raw"] = response["raw"] + 1
             elif item.state == 'processed':
                 response["processed"] = response["processed"] + 1
             elif item.state == 'error':
                 response["error"] = response["error"] + 1
         return response
-
-
-
-
-

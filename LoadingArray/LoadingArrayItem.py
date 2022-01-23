@@ -1,5 +1,6 @@
 import datetime
 
+
 class LoadingArrayItem:
     """LoadingArrayItem is the building block for items (typically raw stock) that are added to a LoadingArray
     They have a name and locations where they are to be picked up from to be processed and placed
@@ -23,6 +24,7 @@ class LoadingArrayItem:
         If item has been processed, or processing has resulted in an error, this string will
         describe what happened
     """
+
     def __init__(self, name, pickcoord, placecoord=None):
         """
         :param name: Unique identifier for the item
@@ -48,7 +50,7 @@ class LoadingArrayItem:
         :return: None
         """
         self.state = "processed"
-        self.processingNote = "Processing completed at: "+datetime.datetime.now().strftime("%I:%M%p %B %d, %Y")
+        self.processingNote = "Processing completed at: " + datetime.datetime.now().strftime("%I:%M%p %B %d, %Y")
 
     def mark_error(self, errordesc):
         """

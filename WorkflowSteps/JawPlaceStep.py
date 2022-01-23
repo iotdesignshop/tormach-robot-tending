@@ -1,7 +1,6 @@
 import logging
 
-import WorkflowStep
-import MultiGripUtil
+from WorkflowSteps import MultiGripUtil
 
 
 class JawPlaceStep:

@@ -1,10 +1,9 @@
 import logging
 
-import WorkflowStep
-import MultiGripUtil
+from WorkflowSteps import MultiGripUtil
 
 
-class JawPickStep:
+class JawPickStep():
     """
     The JawPickStep is a workflow step which will tell the robot to pick up a set of jaws from a versabuilt vise
     """

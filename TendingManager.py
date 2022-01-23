@@ -1,10 +1,11 @@
-import LoadingArray.LoadingArray as LoadingArray
+from LoadingArray import LoadingArray
 import TendingExceptions
 import logging
 
 
 class TendingManager:
     """TendingManager is the core object you instantiate to manage the tending processes in the system"""
+
     def __init__(self):
         self.loadingArray = LoadingArray.LoadingArray()
         self.workflowSteps = []
@@ -20,10 +21,11 @@ class TendingManager:
         :param placecoord: Position to place the object after processing, None = place at pick location
         :return: LoadingArrayItem for the item that was added to the manager, None if the addition failed
         """
+
         try:
             return self.loadingArray.add_item(name, pickcoord, placecoord)
         except TendingExceptions.ItemException as ex:
-            logging.error("Error adding item to Tending Array: "+ex.message)
+            logging.error("Error adding item to Tending Array: " + ex.message)
             return None
 
     def create_2d_array(self, origin, x_column_offset, y_row_offset, max_columns, max_rows, numitems):
@@ -46,12 +48,13 @@ class TendingManager:
             logging.error("Error creating 2D Array: Invalid item count or column count")
             return None
 
+
         # Lay out the grid
         for i in range(numitems):
-            row = i/max_columns
-            col = i%max_columns
-            coord = [origin[0]+col*x_column_offset, origin[1]+row*y_row_offset, origin[2]]
-            self.add_item("Grid "+str(row)+","+str(col), coord)
+            row = i / max_columns
+            col = i % max_columns
+            coord = [origin[0] + col * x_column_offset, origin[1] + row * y_row_offset, origin[2]]
+            self.add_item("Grid " + str(row) + "," + str(col), coord)
 
         return self.loadingArray
 
@@ -73,11 +76,10 @@ class TendingManager:
 
         # Lay out the grid
         for i in range(item_count):
-            coord = [origin[0], origin[1], origin[2]+i*item_z_height];
+            coord = [origin[0], origin[1], origin[2] + i * item_z_height];
             self.add_item("Item " + str(i), coord, drop_zone)
 
         return self.loadingArray
-
 
     def clear_items(self):
         """
@@ -86,7 +88,7 @@ class TendingManager:
         """
         self.loadingArray = LoadingArray.LoadingArray()
 
-    def add_pre_workflow_step(self,workflow_step):
+    def add_pre_workflow_step(self, workflow_step):
         """
         Adds a workflow step to be executed prior to the main item loop
         :param workflow_step: Step to be added
@@ -94,7 +96,7 @@ class TendingManager:
         """
         self.preWorkflowSteps.append(workflow_step)
 
-    def add_post_workflow_step(self,workflow_step):
+    def add_post_workflow_step(self, workflow_step):
         """
         Adds a workflow step to be executed on each item
         :param workflow_step: Step to be added
@@ -102,7 +104,7 @@ class TendingManager:
         """
         self.postWorkflowSteps.append(workflow_step);
 
-    def add_workflow_step(self,workflow_step):
+    def add_workflow_step(self, workflow_step):
         """
         Adds a workflow step to be executed on each item
         :param workflow_step: Step to be added
@@ -124,7 +126,7 @@ class TendingManager:
         for step in self.preWorkflowSteps:
             if not step.execute_step():
                 # Hit an error or a stop - bail out
-                logging.error("Execution failed in Pre-Workflow Step #"+str(self.preWorkflowSteps.index(step)))
+                logging.error("Execution failed in Pre-Workflow Step #" + str(self.preWorkflowSteps.index(step)))
                 return False
 
         # Then, run through all items
@@ -148,11 +150,10 @@ class TendingManager:
 
             logging.info(self.loadingArray.get_stats())
 
-
         # Final step - run through post-workflow
         logging.info("Workflow: Executing Post-Workflow Steps")
         for step in self.postWorkflowSteps:
             if not step.execute_step():
                 # Hit an error or a stop - bail out
-                logging.error("Execution failed in Post-Workflow Step #"+str(self.postWorkflowSteps.index(step)))
+                logging.error("Execution failed in Post-Workflow Step #" + str(self.postWorkflowSteps.index(step)))
                 return False
